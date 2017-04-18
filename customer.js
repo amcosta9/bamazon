@@ -33,7 +33,7 @@ var showProducts = function () {
         // initializes new cli-table
         var table = new Table({
             head: ['Product ID', 'Product Name', 'Price']
-            , colWidths: [13, 35, 10]
+            , colWidths: [13, 40, 10]
         });
 
         for (var i = 0; i < res.length; i++) {
@@ -45,8 +45,8 @@ var showProducts = function () {
         console.log(table.toString());
 
         buyProduct();
-    });
-};
+    }); // end connection.query
+}; // end showProducts()
 
 var buyProduct = function () {
     // ask user what product and how many they would like to buy
@@ -72,31 +72,29 @@ var buyProduct = function () {
             filter: Number
         }
     ]).then(function (answer) {
-        console.log(answer);
         // check to see if inventory of selected product is available
         var invQuery = 'SELECT * FROM `products` WHERE ? AND `stock_quantity` >= ?';
         connection.query(invQuery, [{id: answer.productId}, answer.quantity], function (err, res) {
             if (err) throw err;
-            console.log(res.length);
+            // if result of query is > 0, there is enough quantity available
             if (res.length > 0) {
                 purchase(res, answer.quantity);
             } else {
-                console.log('Sorry, we do not have enough inventory to cover your order');
+                console.log('Sorry, we do not have enough inventory to cover your order.');
                 showProducts();
             }
-        });
+        }); // end connection.query
 
 
-    });
-};
+    }); // end .then
+}; // end buyProduct()
 
 var purchase = function (bamItem, userQuant) {
-    console.log('purchase function', bamItem);
-    console.log('userQuant', userQuant);
+    // calculate user's total
+    var total = (bamItem[0].price * userQuant);
+    console.log('Great! Your order for ' + userQuant + ' ' + bamItem[0].product_name + ' is processing. Your total is: $' + total + '.');
     // subtract amount purchased from stock quantity
     var newQuant = bamItem[0].stock_quantity - userQuant;
-    console.log('bamItem', bamItem[0].stock_quantity);
-    console.log('newQuant', newQuant);
     // update database table `products`
     connection.query("UPDATE `products` SET ? WHERE ?", [
         {
@@ -107,9 +105,30 @@ var purchase = function (bamItem, userQuant) {
         }
     ], function (err, res) {
         if (err) throw err;
-        console.log(res);
-    });
-    // end server connection
-    connection.end();
-};
+        console.log('Thanks for your purchase!');
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'doNext',
+                message: 'What would you like to do?',
+                choices: ['Continue Shopping', 'Disconnect']
+            }
+        ]).then(function (data) {
+            switch (data.doNext) {
+                // if user selects to continue shopping, display products
+                case 'Continue Shopping':
+                    console.log('Here\'s what we have in stock:');
+                    showProducts();
+                    break;
+                case 'Disconnect':
+                    console.log('Goodbye!');
+                    // end server connection
+                    connection.end();
+                    break;
+                default:
+                    console.log('something went wrong')
+            } // end switch()
+        }); // end .then
+    }); // end connection.query
+}; // end purchase()
 
