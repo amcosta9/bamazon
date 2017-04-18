@@ -93,6 +93,7 @@ var purchase = function (bamItem, userQuant) {
     // calculate user's total
     var total = (bamItem[0].price * userQuant);
     console.log('Great! Your order for ' + userQuant + ' ' + bamItem[0].product_name + ' is processing. Your total is: $' + total + '.');
+    updateSales(bamItem, total);
     // subtract amount purchased from stock quantity
     var newQuant = bamItem[0].stock_quantity - userQuant;
     // update database table `products`
@@ -132,3 +133,23 @@ var purchase = function (bamItem, userQuant) {
     }); // end connection.query
 }; // end purchase()
 
+var updateSales = function (bamItem, transRevenue) {
+    // updates `products` table with revenue information per item
+    var salesQuery = 'SELECT * FROM `products` WHERE ?';
+    connection.query(salesQuery, [{id: bamItem[0].id}], function (err, res) {
+        if (err) throw err;
+        // add new transRevenue to any existing revenue
+        var newTotalSales = res[0].product_sales + transRevenue;
+        connection.query("UPDATE `products` SET ? WHERE ?", [
+                {
+                    product_sales: newTotalSales
+                },
+                {
+                    id: res[0].id
+                }
+            ], function (err, res) {
+                if (err) throw err;
+            }
+        ); // end connection.query update `products`
+    }); // end connection.query salesQuery
+}; // end updateSales()
