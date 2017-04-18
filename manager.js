@@ -31,10 +31,7 @@ var welcomeToWork = function () {
             type: 'list',
             name: 'toDo',
             message: 'What would you like to do?',
-            choices: ['View Products for Sale',
-                'View Low Inventory',
-                'Add to Inventory',
-                'Add New Product']
+            choices: ['View Products for Sale', 'View Low Inventory', 'Add to Inventory', 'Add New Product', 'Disconnect']
         }
     ]).then(function (data) {
         switch (data.toDo) {
@@ -53,6 +50,10 @@ var welcomeToWork = function () {
             case 'Add New Product':
                 console.log('Add New Product:');
                 newProduct();
+                break;
+            case 'Disconnect':
+                console.log('Goodbye!');
+                connection.end();
                 break;
             default:
                 console.log('Something went wrong.')
@@ -180,5 +181,71 @@ var addInventory = function() {
 }; // end addInventory()
 
 var newProduct = function() {
-    console.log('new product')
+    console.log('Please enter new product details:');
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'itemName',
+            message: 'Item Name'
+        },
+        {
+            type: 'input',
+            name: 'deptName',
+            message: 'Department Name'
+        },
+        {
+            type: 'input',
+            name: 'price',
+            message: 'Price',
+            validate: function (value) {
+                var valid = !isNaN(parseFloat(value));
+                return valid || 'Please enter a number';
+            },
+            filter: Number
+        },
+        {
+            type: 'input',
+            name: 'quantity',
+            message: 'Stock Quantity',
+            validate: function (value) {
+                var valid = !isNaN(parseFloat(value));
+                return valid || 'Please enter a number';
+            },
+            filter: Number
+        }
+    ]).then(function (answer) {
+        connection.query("INSERT INTO products SET ?", {
+            product_name: answer.itemName,
+            department_name: answer.deptName,
+            price: answer.price,
+            stock_quantity: answer.quantity
+        }, function (err, res) {
+            console.log('New product added.');
+            inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'doNext',
+                    message: 'What would you like to do?',
+                    choices: ['Add Another Product', 'Main Menu', 'Disconnect']
+                }
+            ]).then(function (data) {
+                switch (data.doNext) {
+                    // if user selects to continue shopping, display products
+                    case 'Add More Inventory':
+                        newProduct();
+                        break;
+                    case 'Main Menu':
+                        welcomeToWork();
+                        break;
+                    case 'Disconnect':
+                        console.log('Goodbye!');
+                        // end server connection
+                        connection.end();
+                        break;
+                    default:
+                        console.log('something went wrong')
+                } // end switch()
+            }); // end .then() doNext
+        }); // end connection.query insert to products
+    }); // end .then() new product inquirer prompt
 }; // end newProduct()
