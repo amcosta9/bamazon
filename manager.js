@@ -85,10 +85,10 @@ var showAllInventory = function() {
 }; // end showAllInventory()
 
 var showLowInventory = function() {
-    var lowInvQuery = 'SELECT * FROM `products` WHERE `stock_quantity` < 5';
+    var lowInvQuery = 'SELECT * FROM `products` WHERE `stock_quantity` < 10';
     connection.query(lowInvQuery, function (err, res) {
         if (err) throw err;
-        if (res > 0) {
+        if (res.length > 0) {
         // initializes new cli-table
         var table = new Table({
             head: ['Product ID', 'Product Name', 'Price', 'Inventory']
@@ -214,7 +214,7 @@ var newProduct = function() {
             filter: Number
         }
     ]).then(function (answer) {
-        connection.query("INSERT INTO products SET ?", {
+        connection.query("INSERT INTO `products` SET ?", {
             product_name: answer.itemName,
             department_name: answer.deptName,
             price: answer.price,
@@ -231,7 +231,7 @@ var newProduct = function() {
             ]).then(function (data) {
                 switch (data.doNext) {
                     // if user selects to continue shopping, display products
-                    case 'Add More Inventory':
+                    case 'Add Another Product':
                         newProduct();
                         break;
                     case 'Main Menu':

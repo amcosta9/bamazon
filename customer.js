@@ -152,4 +152,26 @@ var updateSales = function (bamItem, transRevenue) {
             }
         ); // end connection.query update `products`
     }); // end connection.query salesQuery
+
+
+    // updates `departments` table with revenue information per department
+    var salesDeptQuery = 'SELECT * FROM `departments` WHERE ?';
+    connection.query(salesDeptQuery, [{department_name: bamItem[0].department_name}], function (err, res) {
+        if (err) throw err;
+        // add new transRevenue to any existing revenue
+        var newDeptTotalSales = res[0].total_sales + transRevenue;
+        connection.query("UPDATE `departments` SET ? WHERE ?", [
+                {
+                    total_sales: newDeptTotalSales
+                },
+                {
+                    id: res[0].id
+                }
+            ], function (err, res) {
+                if (err) throw err;
+            }
+        ); // end connection.query update `departments`
+    }); // end connection.query salesDeptQuery
+
+
 }; // end updateSales()
