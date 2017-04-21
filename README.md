@@ -10,7 +10,9 @@
 3. There are three dashboards to this application - __Customer View,__ __Manager View,__ and __Supervisor View__. Run the application by typing `node customer.js`, `node manager.js`, or `node supervisor.js` in the command line.
 4. Follow the prompts to __Make Bamazon Purchases__, __Manage Bamazon Inventory and Prices__, or __Manage Bamazon Accounting.__
 
+#### Demo
 
+[![Bamazon Video Demo](http://img.youtube.com/vi/WKIaSnvbO5w/0.jpg)](https://youtu.be/WKIaSnvbO5w "Bamazon Demo")
 
 #### Assignment
 
