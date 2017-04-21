@@ -6,9 +6,9 @@
 
 1. Install the app by cloning this repo and navigating to the file in the command line.
 2. Remember to `npm install` so the dependencies are loaded to your local copy of the app.
-3. Create a database using MySQL called __Bamazon__.  Use the code in the `bamazonSeeds.sql` file to populate your __Bamazon__ database with a table and some inventory. (Use Workbench or MySQL in the command line).
-3. There are two dashboards to this application - __Customer View__ and __Manager View__. Run the application by typing `node customer.js` or `node manager.js` in the command line.
-4. Follow the prompts to __Make Bamazon Purchases__ or __Manage Bamazon Inventory and Prices.__
+3. Create a database using MySQL called __Bamazon__.  Use the code in the `bamazonSeeds.sql` and `bamSupervisorSeeds.sql` files to populate your __Bamazon__ database with tables and some inventory. (Use Workbench or MySQL in the command line).
+3. There are three dashboards to this application - __Customer View,__ __Manager View,__ and __Supervisor View__. Run the application by typing `node customer.js`, `node manager.js`, or `node supervisor.js` in the command line.
+4. Follow the prompts to __Make Bamazon Purchases__, __Manage Bamazon Inventory and Prices__, or __Manage Bamazon Accounting.__
 
 
 
